@@ -84,7 +84,7 @@ class Background(commands.Cog):
 		Helper fuction to reorder the class channels by thier respective member counts
 	"""
 	async def reorder_channels(self):
-		BLACKLIST = ["Admin","GiveawayBot","Nadeko","Bots","Mod","dabBot","@everyone","Simple Poll","Groovy"]
+		BLACKLIST = ["Admin","GiveawayBot","Bots","Mod","dabBot","@everyone","Simple Poll","Groovy"]
 
 		psu_discord = self.bot.get_guild(575004997327126551)
 		raw_roles = psu_discord.roles
@@ -96,6 +96,7 @@ class Background(commands.Cog):
 
 		for index, role in enumerate(roles):
 			pos = len(raw_roles)-len(BLACKLIST)-index
+			if pos <= 0: pos = 1
 			if role.position == pos:
 				print("{} already in position {}".format(role.name, pos))
 				continue
