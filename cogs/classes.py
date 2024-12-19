@@ -276,7 +276,7 @@ class Classes(commands.Cog):
 		while True:
 			create_class_embed = (discord.Embed(title = "Please enter the alias of the class you want to create, for example: `CMPSC 465`", color=random.randint(111111, 999999), timestamp=datetime.datetime.now())
 				.set_footer(text = "Enter cancel to stop this session")
-				.set_author(name = author.name, icon_url = author.avatar_url))
+				.set_author(name = author.name, icon_url = author.avatar.url))
 
 			await ctx.reply(embed=create_class_embed)
 			cond = True
@@ -362,7 +362,7 @@ class Classes(commands.Cog):
 
 			create_class_embed = (discord.Embed(title = "Please enter the full name of the class, for example: `Data Structures and Algorithms`", color=random.randint(111111, 999999), timestamp=datetime.datetime.now())
 				.set_footer(text = "Enter cancel to stop this session")
-				.set_author(name = author.name, icon_url = author.avatar_url))
+				.set_author(name = author.name, icon_url = author.avatar.url))
 			await reply_msg.reply(embed=create_class_embed)
 
 			reply_msg = await self.bot.wait_for('message', check=mcheck)
@@ -372,7 +372,7 @@ class Classes(commands.Cog):
 			class_name = reply_msg.content.title()
 
 			create_class_embed = (discord.Embed(title = "Enter `confirm` to create the following class, or `cancel` to stop this session:\n **{}**: {}".format(class_alias, class_name), color=random.randint(111111, 999999), timestamp=datetime.datetime.now())
-				.set_author(name = author.name, icon_url = author.avatar_url))
+				.set_author(name = author.name, icon_url = author.avatar.url))
 			await reply_msg.reply(embed=create_class_embed)
 			reply_msg = await self.bot.wait_for('message', check=mcheck)
 			if cancel(reply_msg.content):
@@ -506,7 +506,7 @@ class Classes(commands.Cog):
 						value="► Name: `{}#{}` {} [{}]\n► Joined Server On: **{}**\n► Channel: {}\n► Added Role: {} [{}]"
 									.format(author.name, author.discriminator, author.mention, author.id, author.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p'), self.bot.get_channel(int(c[1])).mention, r.mention, r.id), 
 						inline=False)
-					em.set_author(name = author.name, icon_url = author.avatar_url)
+					em.set_author(name = author.name, icon_url = author.avatar.url)
 					staff_log_channel = self.bot.get_channel(707516608347635772)
 					await staff_log_channel.send(embed=em)
 
@@ -543,7 +543,7 @@ class Classes(commands.Cog):
 				em.add_field(name="Member left {} chat".format(c[0]), 
 					value="► Name: `{}#{}` {} [{}]\n► Joined Server On: **{}**\n► Channel: {}\n► Removed Role: {} [{}]".format(author.name, author.discriminator, author.mention, author.id, author.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p'), self.bot.get_channel(int(c[1])).mention, r.mention, r.id), 
 					inline=False)
-				em.set_author(name = author.name, icon_url = author.avatar_url)
+				em.set_author(name = author.name, icon_url = author.avatar.url)
 				staff_log_channel = self.bot.get_channel(707516608347635772)
 				await staff_log_channel.send(embed=em)
 

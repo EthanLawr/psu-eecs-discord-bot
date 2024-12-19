@@ -125,7 +125,7 @@ class Logging(commands.Cog):
 		em.add_field(name="Member left or was kicked from the server", 
 			value=f"► Name: `{member.name}#{member.discriminator}` {member.mention} [{member.id}]\n► Joined Server On: **{joined_date}**\n► Roles: `{possessed_roles}`", 
 			inline=False)
-		em.set_author(name = member.name, icon_url = member.avatar_url)
+		em.set_author(name = member.name, icon_url = member.avatar.url)
 		
 		staff_log_channel = self.bot.get_channel(self.log_channel_id)
 		await staff_log_channel.send(embed=em)
@@ -156,7 +156,7 @@ class Logging(commands.Cog):
 		em.add_field(name="Member joined the server", 
 			value=f"► Name: `{member.name}#{member.discriminator}` {member.mention} [{member.id}]\n► Joined Server On: **{joined_date}**\n► Created Account On: **{create_date}**", 
 			inline=False)
-		em.set_author(name = member.name, icon_url = member.avatar_url)
+		em.set_author(name = member.name, icon_url = member.avatar.url)
 		
 		staff_log_channel = self.bot.get_channel(self.log_channel_id)
 		await staff_log_channel.send(embed=em)
@@ -179,7 +179,7 @@ class Logging(commands.Cog):
 				description=f"► Name: `{msg.author.name}#{msg.author.discriminator}` {msg.author.mention} [{msg.author.id}]\n► Joined Server On: **{joined_date}**\n► Message ID: {msg.id}", 
 				color=0xFF8B00, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"Message by {msg.author.name}#{msg.author.discriminator} deleted in #{msg.channel.name}", icon_url = msg.author.avatar_url)
+			em.set_author(name = f"Message by {msg.author.name}#{msg.author.discriminator} deleted in #{msg.channel.name}", icon_url = msg.author.avatar.url)
 			em.add_field(name="Message Content", value=msg.content, inline=False)
 			
 			staff_log_channel = self.bot.get_channel(self.log_channel_id)
@@ -237,7 +237,7 @@ class Logging(commands.Cog):
 				description=f"► Name: `{before.author.name}#{before.author.discriminator}` {before.author.mention} [{before.author.id}]\n► Joined Server On: **{joined_date}**\n► Message ID: {before.id}", 
 				color=0x0076FA, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"Message in #{before.channel.name} edited by {before.author.name}#{before.author.discriminator}", icon_url = before.author.avatar_url)
+			em.set_author(name = f"Message in #{before.channel.name} edited by {before.author.name}#{before.author.discriminator}", icon_url = before.author.avatar.url)
 			em.add_field(name="Original Content", value=before.content, inline=True)
 			em.add_field(name="New Content", value=after.content, inline=True)
 
@@ -270,7 +270,7 @@ class Logging(commands.Cog):
 				description=f"► Name: `{before.name}#{before.discriminator}` {before.mention} [{before.id}]\n► Joined Server On: **{joined_date}**", 
 				color=0xFFF25A, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"{before.name}#{before.discriminator}'s nickname was changed", icon_url = before.avatar_url)
+			em.set_author(name = f"{before.name}#{before.discriminator}'s nickname was changed", icon_url = before.avatar.url)
 			em.add_field(name="Original Nickname", value=before.nick, inline=True)
 			em.add_field(name="New Nickname", value=after.nick, inline=True)
 
@@ -285,7 +285,7 @@ class Logging(commands.Cog):
 				description=f"► Name: `{before.name}#{before.discriminator}` {before.mention} [{before.id}]\n► Joined Server On: **{joined_date}**", 
 				color=0xFFF25A, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"{before.name}#{before.discriminator}'s status was changed", icon_url = before.avatar_url)
+			em.set_author(name = f"{before.name}#{before.discriminator}'s status was changed", icon_url = before.avatar.url)
 			em.add_field(name="Original Status", value=str(before.status), inline=True)
 			em.add_field(name="New Status", value=str(after.status), inline=True)
 
