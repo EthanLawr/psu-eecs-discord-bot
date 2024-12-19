@@ -499,7 +499,6 @@ class Classes(commands.Cog):
 					status = False
 
 					await self.update_class_member_count(int(c[2]), int(c[1]))
-					await self.reorder_channels()
 
 					est = pytz.timezone('US/Eastern')
 					em = discord.Embed(color=0x10D600, timestamp=datetime.datetime.now())
@@ -511,6 +510,7 @@ class Classes(commands.Cog):
 					em.set_author(name = author.name, icon_url = author.avatar.url)
 					staff_log_channel = self.bot.get_channel(707516608347635772)
 					await staff_log_channel.send(embed=em)
+					await self.reorder_channels()
 
 			if status: await ctx.reply("`{}` doesn't seem to exist yet, try creating class chats and roles for it by doing `!create` in <#618205441540882451>! {}".format(cont[1], author.mention))
 		except Exception as e:
@@ -550,9 +550,8 @@ class Classes(commands.Cog):
 				await staff_log_channel.send(embed=em)
 
 				await self.update_class_member_count(int(c[2]), int(c[1]))
-				await self.reorder_channels()
-
 				await self.delete_message(self.bot.get_channel(618210352341188618), m, 10)	
+				await self.reorder_channels()
 				return
 
 		# Error Handling
