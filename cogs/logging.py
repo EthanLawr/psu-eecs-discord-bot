@@ -2,16 +2,11 @@ import discord
 from discord.ext import commands
 import time
 import os
-import sys
 import datetime
 import asyncio
-import random
-import mysql.connector
-import inspect
 import mysqlConnection_local as sql # mysql file
 import traceback
 import pytz
-import threading
 from dotenv import load_dotenv
 
 load_dotenv() # adds environment variables to current environment

@@ -5,9 +5,6 @@ import os
 import sys
 import datetime
 import asyncio
-import random
-import mysql.connector
-import inspect
 import mysqlConnection_local as sql # mysql file
 import traceback
 import pytz
@@ -192,7 +189,7 @@ class Background(commands.Cog):
 			f = lambda x: len(x[1]) # returns length of nested list
 			arr.sort(key=f, reverse=True) # sort array by number of classes in each department/field from greatest to smallest
 
-			await self.bot.get_channel(self.class_sub_channel_id).purge(limit=10)
+			# await self.bot.get_channel(self.class_sub_channel_id).purge(limit=10)
 			
 			est = pytz.timezone('US/Eastern')
 			em = discord.Embed(description = "**Join a class group chat and receive notifications by invoking one of the following command(s) below**:\n\n",
@@ -221,7 +218,7 @@ class Background(commands.Cog):
 			sql.close(mydb, my_cursor)
 
 			# bot.loop.create_task(await my_background_task())
-			await asyncio.gather(self.my_background_task())
+			# await asyncio.gather(self.my_background_task()) # disabled as of 12.19.2024
 
 
 async def setup(bot):

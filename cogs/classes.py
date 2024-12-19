@@ -1,18 +1,13 @@
 import discord
 from discord.ext import commands
-import time
-import os
-import sys
 import datetime
 import asyncio
 import random
-import mysql.connector
 import datetime
 import inspect
 import mysqlConnection_local as sql # mysql file
 import traceback
 import pytz
-import threading
 
 
 """
@@ -95,7 +90,7 @@ class Classes(commands.Cog):
 		!add command
 		>>	used to add reminders for a certain class like homework, exams, etc.
 	"""
-	@commands.command()
+	# @commands.command() # disabled as of 12.19.2024
 	async def add(self, ctx, *args):
 		# !add hw8
 		# cmpsc 465
