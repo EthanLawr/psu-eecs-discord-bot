@@ -279,7 +279,8 @@ class Logging(commands.Cog):
 			staff_log_channel = self.bot.get_channel(self.log_channel_id)
 			await staff_log_channel.send(embed=em)
 
-		print(f'{before.status} - {after.status}')
+	@commands.Cog.listener()
+	async def on_presence_update(self, before: discord.Member, after: discord.Member):
 		if before.status != after.status:
 			est = pytz.timezone('US/Eastern')
 			joined_date = before.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p')
