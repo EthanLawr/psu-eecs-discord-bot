@@ -90,7 +90,7 @@ class Background(commands.Cog):
 		psu_discord = self.bot.get_guild(575004997327126551)
 		raw_roles = psu_discord.roles
 
-		f = lambda r : r.name not in BLACKLIST
+		f = lambda r : r.name not in BLACKLIST + ['@everyone']
 
 		roles = list(filter(f, raw_roles))
 		roles.sort(key=lambda x: (len(x.members), x.name), reverse=True)
