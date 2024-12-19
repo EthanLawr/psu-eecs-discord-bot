@@ -1,0 +1,8 @@
+discord.py
+html5lib
+multidict
+mysql-connector-python
+platformdirs
+python-dateutil
+python-dotenv
+pytz
