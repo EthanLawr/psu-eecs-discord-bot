@@ -19,7 +19,7 @@ import threading
 	This cog is for commands dealing with counting
 """
 class Counting(commands.Cog):
-	def __init__(self, bot):
+	def __init__(self, bot: commands.Bot):
 		self.bot = bot
 		self.on_ready_status = True
 
@@ -173,7 +173,7 @@ class Counting(commands.Cog):
 				self.counting_number = int(data[0][1]) # set global variables
 				self.counting_number_userId = str(data[0][0]) 
 
-				counting_msgs = await self.bot.get_channel(715963289494093845).history(limit=30).flatten()
+				counting_msgs = [message async for message in self.bot.get_channel(715963289494093845).history(limit=30)]
 				for c_m in counting_msgs:
 					try:
 						number_msg = int(c_m.content, 2) # checks if msg is a valid binary number
@@ -282,7 +282,7 @@ class Counting(commands.Cog):
 				await self.delete_message(channel, message, 0)
 
 
-def setup(bot):
+async def setup(bot):
 	"""
 		>> https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
 		An extension must have a global function, setup 
@@ -290,4 +290,4 @@ def setup(bot):
 			the extension is loaded. 
 		This entry point must have a single argument, the bot.
 	"""
-	bot.add_cog(Counting(bot)) # add cog/Class by passing in instance
+	await bot.add_cog(Counting(bot)) # add cog/Class by passing in instance

@@ -14,7 +14,7 @@ import threading
 from dotenv import load_dotenv
 
 load_dotenv() # adds environment variables to current environment (like bot key)
-bot = commands.Bot(command_prefix="!")
+# bot = commands.Bot(command_prefix="!")
 
 
 class PSU_Bot(commands.Bot): # inherits discord.commands class
@@ -25,12 +25,15 @@ class PSU_Bot(commands.Bot): # inherits discord.commands class
 	def __init__(self):  
 		super().__init__(command_prefix="!", intents=discord.Intents.all())
 		self.token = os.getenv("BOT_KEY")
-		self.load_extension("cogs.classes")		# loads Classes extension containing classes-related commands
-		self.load_extension("cogs.counting")	# loads Classes extension containing counting-related commands
-		self.load_extension("cogs.logging")		# loads Classes extension containing logging-related functions
-		self.load_extension("cogs.background")	# loads Classes extension containing background related tasks
-		# print(vars(self))
-		
+
+	async def setup_hook(self):
+		# load cogs
+		print("Loading extensions...")
+		await self.load_extension("cogs.classes")		# loads Classes extension containing classes-related commands
+		await self.load_extension("cogs.counting")		# loads Classes extension containing counting-related commands
+		await self.load_extension("cogs.logging")		# loads Classes extension containing logging-related functions
+		await self.load_extension("cogs.background")	# loads Classes extension containing background related tasks
+		print("DONE LOADING EXTENSIONS")
 
 	"""
 		Function runs once bot is connected to discord API

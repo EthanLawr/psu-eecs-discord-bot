@@ -5,9 +5,6 @@ import os
 import sys
 import datetime
 import asyncio
-import random
-import mysql.connector
-import inspect
 import mysqlConnection_local as sql # mysql file
 import traceback
 import pytz
@@ -87,18 +84,20 @@ class Background(commands.Cog):
 		Helper fuction to reorder the class channels by thier respective member counts
 	"""
 	async def reorder_channels(self):
-		BLACKLIST = ["Admin","GiveawayBot","Nadeko","Bots","Mod","dabBot","@everyone","Simple Poll","Groovy"]
+		BLACKLIST = ["Admin","GiveawayBot","Bots","Mod","dabBot","Simple Poll","Groovy"]
+		# @everyone is position 0
 
 		psu_discord = self.bot.get_guild(575004997327126551)
 		raw_roles = psu_discord.roles
 
-		f = lambda r : r.name not in BLACKLIST
+		f = lambda r : r.name not in BLACKLIST + ['@everyone']
 
 		roles = list(filter(f, raw_roles))
 		roles.sort(key=lambda x: (len(x.members), x.name), reverse=True)
 
 		for index, role in enumerate(roles):
 			pos = len(raw_roles)-len(BLACKLIST)-index
+			if pos <= 0: pos = 1
 			if role.position == pos:
 				print("{} already in position {}".format(role.name, pos))
 				continue
@@ -192,7 +191,7 @@ class Background(commands.Cog):
 			f = lambda x: len(x[1]) # returns length of nested list
 			arr.sort(key=f, reverse=True) # sort array by number of classes in each department/field from greatest to smallest
 
-			await self.bot.get_channel(self.class_sub_channel_id).purge(limit=10)
+			# await self.bot.get_channel(self.class_sub_channel_id).purge(limit=10)
 			
 			est = pytz.timezone('US/Eastern')
 			em = discord.Embed(description = "**Join a class group chat and receive notifications by invoking one of the following command(s) below**:\n\n",
@@ -221,10 +220,10 @@ class Background(commands.Cog):
 			sql.close(mydb, my_cursor)
 
 			# bot.loop.create_task(await my_background_task())
-			await asyncio.gather(self.my_background_task())
+			# await asyncio.gather(self.my_background_task()) # disabled as of 12.19.2024
 
 
-def setup(bot):
+async def setup(bot):
 	"""
 		>> https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
 		An extension must have a global function, setup 
@@ -232,4 +231,4 @@ def setup(bot):
 			the extension is loaded. 
 		This entry point must have a single argument, the bot.
 	"""
-	bot.add_cog(Background(bot)) # add cog/Class by passing in instance
+	await bot.add_cog(Background(bot)) # add cog/Class by passing in instance

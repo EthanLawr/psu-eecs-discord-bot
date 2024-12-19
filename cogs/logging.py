@@ -2,16 +2,11 @@ import discord
 from discord.ext import commands
 import time
 import os
-import sys
 import datetime
 import asyncio
-import random
-import mysql.connector
-import inspect
 import mysqlConnection_local as sql # mysql file
 import traceback
 import pytz
-import threading
 from dotenv import load_dotenv
 
 load_dotenv() # adds environment variables to current environment
@@ -87,18 +82,20 @@ class Logging(commands.Cog):
 		Helper fuction to reorder the class channels by thier respective member counts
 	"""
 	async def reorder_channels(self):
-		BLACKLIST = ["Admin","GiveawayBot","Nadeko","Bots","Mod","dabBot","@everyone","Simple Poll","Groovy"]
+		BLACKLIST = ["Admin","GiveawayBot","Bots","Mod","dabBot","Simple Poll","Groovy"]
+		# @everyone is position 0
 
 		psu_discord = self.bot.get_guild(575004997327126551)
 		raw_roles = psu_discord.roles
 
-		f = lambda r : r.name not in BLACKLIST
+		f = lambda r : r.name not in BLACKLIST + ['@everyone']
 
 		roles = list(filter(f, raw_roles))
 		roles.sort(key=lambda x: (len(x.members), x.name), reverse=True)
 
 		for index, role in enumerate(roles):
 			pos = len(raw_roles)-len(BLACKLIST)-index
+			if pos <= 0: pos = 1
 			if role.position == pos:
 				print("{} already in position {}".format(role.name, pos))
 				continue
@@ -130,7 +127,7 @@ class Logging(commands.Cog):
 		em.add_field(name="Member left or was kicked from the server", 
 			value=f"► Name: `{member.name}#{member.discriminator}` {member.mention} [{member.id}]\n► Joined Server On: **{joined_date}**\n► Roles: `{possessed_roles}`", 
 			inline=False)
-		em.set_author(name = member.name, icon_url = member.avatar_url)
+		em.set_author(name = member.name, icon_url = member.avatar.url)
 		
 		staff_log_channel = self.bot.get_channel(self.log_channel_id)
 		await staff_log_channel.send(embed=em)
@@ -161,7 +158,7 @@ class Logging(commands.Cog):
 		em.add_field(name="Member joined the server", 
 			value=f"► Name: `{member.name}#{member.discriminator}` {member.mention} [{member.id}]\n► Joined Server On: **{joined_date}**\n► Created Account On: **{create_date}**", 
 			inline=False)
-		em.set_author(name = member.name, icon_url = member.avatar_url)
+		em.set_author(name = member.name, icon_url = member.avatar.url)
 		
 		staff_log_channel = self.bot.get_channel(self.log_channel_id)
 		await staff_log_channel.send(embed=em)
@@ -184,7 +181,7 @@ class Logging(commands.Cog):
 				description=f"► Name: `{msg.author.name}#{msg.author.discriminator}` {msg.author.mention} [{msg.author.id}]\n► Joined Server On: **{joined_date}**\n► Message ID: {msg.id}", 
 				color=0xFF8B00, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"Message by {msg.author.name}#{msg.author.discriminator} deleted in #{msg.channel.name}", icon_url = msg.author.avatar_url)
+			em.set_author(name = f"Message by {msg.author.name}#{msg.author.discriminator} deleted in #{msg.channel.name}", icon_url = msg.author.avatar.url)
 			em.add_field(name="Message Content", value=msg.content, inline=False)
 			
 			staff_log_channel = self.bot.get_channel(self.log_channel_id)
@@ -242,7 +239,7 @@ class Logging(commands.Cog):
 				description=f"► Name: `{before.author.name}#{before.author.discriminator}` {before.author.mention} [{before.author.id}]\n► Joined Server On: **{joined_date}**\n► Message ID: {before.id}", 
 				color=0x0076FA, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"Message in #{before.channel.name} edited by {before.author.name}#{before.author.discriminator}", icon_url = before.author.avatar_url)
+			em.set_author(name = f"Message in #{before.channel.name} edited by {before.author.name}#{before.author.discriminator}", icon_url = before.author.avatar.url)
 			em.add_field(name="Original Content", value=before.content, inline=True)
 			em.add_field(name="New Content", value=after.content, inline=True)
 
@@ -251,7 +248,7 @@ class Logging(commands.Cog):
 
 		# Counting channel check
 		if before.channel.id == 715963289494093845:
-			l_msg = await before.channel.history(limit=1).flatten()
+			l_msg = [message async for message in await before.channel.history(limit=1)]
 			print(before.id, l_msg[0].id)
 			if before.id == l_msg[0].id:
 				counting_number = await self.get_counting_number()
@@ -266,7 +263,7 @@ class Logging(commands.Cog):
 		>>	https://discordpy.readthedocs.io/en/stable/api.html#discord.on_member_update
 	"""
 	@commands.Cog.listener()
-	async def on_member_update(self, before, after):
+	async def on_member_update(self, before: discord.Member, after: discord.Member):
 		if before.nick != after.nick:
 			est = pytz.timezone('US/Eastern')
 			joined_date = before.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p')
@@ -275,13 +272,15 @@ class Logging(commands.Cog):
 				description=f"► Name: `{before.name}#{before.discriminator}` {before.mention} [{before.id}]\n► Joined Server On: **{joined_date}**", 
 				color=0xFFF25A, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"{before.name}#{before.discriminator}'s nickname was changed", icon_url = before.avatar_url)
+			em.set_author(name = f"{before.name}#{before.discriminator}'s nickname was changed", icon_url = before.avatar.url)
 			em.add_field(name="Original Nickname", value=before.nick, inline=True)
 			em.add_field(name="New Nickname", value=after.nick, inline=True)
 
 			staff_log_channel = self.bot.get_channel(self.log_channel_id)
 			await staff_log_channel.send(embed=em)
 
+	@commands.Cog.listener()
+	async def on_presence_update(self, before: discord.Member, after: discord.Member):
 		if before.status != after.status:
 			est = pytz.timezone('US/Eastern')
 			joined_date = before.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p')
@@ -290,7 +289,7 @@ class Logging(commands.Cog):
 				description=f"► Name: `{before.name}#{before.discriminator}` {before.mention} [{before.id}]\n► Joined Server On: **{joined_date}**", 
 				color=0xFFF25A, timestamp=datetime.datetime.now())
 
-			em.set_author(name = f"{before.name}#{before.discriminator}'s status was changed", icon_url = before.avatar_url)
+			em.set_author(name = f"{before.name}#{before.discriminator}'s status was changed", icon_url = before.avatar.url)
 			em.add_field(name="Original Status", value=str(before.status), inline=True)
 			em.add_field(name="New Status", value=str(after.status), inline=True)
 
@@ -298,7 +297,7 @@ class Logging(commands.Cog):
 			await staff_log_channel.send(embed=em)
 
 
-def setup(bot):
+async def setup(bot):
 	"""
 		>> https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
 		An extension must have a global function, setup 
@@ -306,4 +305,4 @@ def setup(bot):
 			the extension is loaded. 
 		This entry point must have a single argument, the bot.
 	"""
-	bot.add_cog(Logging(bot)) # add cog/Class by passing in instance
+	await bot.add_cog(Logging(bot)) # add cog/Class by passing in instance

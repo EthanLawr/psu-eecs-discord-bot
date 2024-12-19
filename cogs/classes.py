@@ -1,18 +1,13 @@
 import discord
 from discord.ext import commands
-import time
-import os
-import sys
 import datetime
 import asyncio
 import random
-import mysql.connector
 import datetime
 import inspect
 import mysqlConnection_local as sql # mysql file
 import traceback
 import pytz
-import threading
 
 
 """
@@ -70,12 +65,13 @@ class Classes(commands.Cog):
 		Helper fuction to reorder the class channels by thier respective member counts
 	"""
 	async def reorder_channels(self):
-		BLACKLIST = ["Admin","GiveawayBot","Nadeko","Bots","Mod","dabBot","@everyone","Simple Poll","Groovy"]
+		BLACKLIST = ["Admin","GiveawayBot","Bots","Mod","dabBot","Simple Poll","Groovy"]
+		# @everyone is position 0
 
 		psu_discord = self.bot.get_guild(575004997327126551)
 		raw_roles = psu_discord.roles
 
-		f = lambda r : r.name not in BLACKLIST
+		f = lambda r : r.name not in BLACKLIST + ['@everyone']
 
 		roles = list(filter(f, raw_roles))
 
@@ -83,6 +79,7 @@ class Classes(commands.Cog):
 
 		for index, role in enumerate(roles):
 			pos = len(raw_roles)-len(BLACKLIST)-index
+			if pos <= 0: pos = 1
 			if role.position == pos:
 				print("{} already in position {}".format(role.name, pos))
 				continue
@@ -95,7 +92,7 @@ class Classes(commands.Cog):
 		!add command
 		>>	used to add reminders for a certain class like homework, exams, etc.
 	"""
-	@commands.command()
+	# @commands.command() # disabled as of 12.19.2024
 	async def add(self, ctx, *args):
 		# !add hw8
 		# cmpsc 465
@@ -281,7 +278,7 @@ class Classes(commands.Cog):
 		while True:
 			create_class_embed = (discord.Embed(title = "Please enter the alias of the class you want to create, for example: `CMPSC 465`", color=random.randint(111111, 999999), timestamp=datetime.datetime.now())
 				.set_footer(text = "Enter cancel to stop this session")
-				.set_author(name = author.name, icon_url = author.avatar_url))
+				.set_author(name = author.name, icon_url = author.avatar.url))
 
 			await ctx.reply(embed=create_class_embed)
 			cond = True
@@ -367,7 +364,7 @@ class Classes(commands.Cog):
 
 			create_class_embed = (discord.Embed(title = "Please enter the full name of the class, for example: `Data Structures and Algorithms`", color=random.randint(111111, 999999), timestamp=datetime.datetime.now())
 				.set_footer(text = "Enter cancel to stop this session")
-				.set_author(name = author.name, icon_url = author.avatar_url))
+				.set_author(name = author.name, icon_url = author.avatar.url))
 			await reply_msg.reply(embed=create_class_embed)
 
 			reply_msg = await self.bot.wait_for('message', check=mcheck)
@@ -377,7 +374,7 @@ class Classes(commands.Cog):
 			class_name = reply_msg.content.title()
 
 			create_class_embed = (discord.Embed(title = "Enter `confirm` to create the following class, or `cancel` to stop this session:\n **{}**: {}".format(class_alias, class_name), color=random.randint(111111, 999999), timestamp=datetime.datetime.now())
-				.set_author(name = author.name, icon_url = author.avatar_url))
+				.set_author(name = author.name, icon_url = author.avatar.url))
 			await reply_msg.reply(embed=create_class_embed)
 			reply_msg = await self.bot.wait_for('message', check=mcheck)
 			if cancel(reply_msg.content):
@@ -502,7 +499,6 @@ class Classes(commands.Cog):
 					status = False
 
 					await self.update_class_member_count(int(c[2]), int(c[1]))
-					await self.reorder_channels()
 
 					est = pytz.timezone('US/Eastern')
 					em = discord.Embed(color=0x10D600, timestamp=datetime.datetime.now())
@@ -511,9 +507,10 @@ class Classes(commands.Cog):
 						value="► Name: `{}#{}` {} [{}]\n► Joined Server On: **{}**\n► Channel: {}\n► Added Role: {} [{}]"
 									.format(author.name, author.discriminator, author.mention, author.id, author.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p'), self.bot.get_channel(int(c[1])).mention, r.mention, r.id), 
 						inline=False)
-					em.set_author(name = author.name, icon_url = author.avatar_url)
+					em.set_author(name = author.name, icon_url = author.avatar.url)
 					staff_log_channel = self.bot.get_channel(707516608347635772)
 					await staff_log_channel.send(embed=em)
+					await self.reorder_channels()
 
 			if status: await ctx.reply("`{}` doesn't seem to exist yet, try creating class chats and roles for it by doing `!create` in <#618205441540882451>! {}".format(cont[1], author.mention))
 		except Exception as e:
@@ -548,14 +545,13 @@ class Classes(commands.Cog):
 				em.add_field(name="Member left {} chat".format(c[0]), 
 					value="► Name: `{}#{}` {} [{}]\n► Joined Server On: **{}**\n► Channel: {}\n► Removed Role: {} [{}]".format(author.name, author.discriminator, author.mention, author.id, author.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p'), self.bot.get_channel(int(c[1])).mention, r.mention, r.id), 
 					inline=False)
-				em.set_author(name = author.name, icon_url = author.avatar_url)
+				em.set_author(name = author.name, icon_url = author.avatar.url)
 				staff_log_channel = self.bot.get_channel(707516608347635772)
 				await staff_log_channel.send(embed=em)
 
 				await self.update_class_member_count(int(c[2]), int(c[1]))
-				await self.reorder_channels()
-
 				await self.delete_message(self.bot.get_channel(618210352341188618), m, 10)	
+				await self.reorder_channels()
 				return
 
 		# Error Handling
@@ -590,7 +586,7 @@ class Classes(commands.Cog):
 			print("Join command entered in wrong channel.")
 			pass
 
-def setup(bot):
+async def setup(bot):
 	"""
 		>> https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
 		An extension must have a global function, setup 
@@ -598,4 +594,4 @@ def setup(bot):
 			the extension is loaded. 
 		This entry point must have a single argument, the bot.
 	"""
-	bot.add_cog(Classes(bot)) # add cog/Class by passing in instance
+	await bot.add_cog(Classes(bot)) # add cog/Class by passing in instance
