@@ -282,7 +282,7 @@ class Counting(commands.Cog):
 				await self.delete_message(channel, message, 0)
 
 
-def setup(bot):
+async def setup(bot):
 	"""
 		>> https://discordpy.readthedocs.io/en/latest/ext/commands/cogs.html
 		An extension must have a global function, setup 
@@ -290,4 +290,4 @@ def setup(bot):
 			the extension is loaded. 
 		This entry point must have a single argument, the bot.
 	"""
-	bot.add_cog(Counting(bot)) # add cog/Class by passing in instance
+	await bot.add_cog(Counting(bot)) # add cog/Class by passing in instance
