@@ -263,7 +263,7 @@ class Logging(commands.Cog):
 		>>	https://discordpy.readthedocs.io/en/stable/api.html#discord.on_member_update
 	"""
 	@commands.Cog.listener()
-	async def on_member_update(self, before, after):
+	async def on_member_update(self, before: discord.Member, after: discord.Member):
 		if before.nick != after.nick:
 			est = pytz.timezone('US/Eastern')
 			joined_date = before.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p')
@@ -279,6 +279,7 @@ class Logging(commands.Cog):
 			staff_log_channel = self.bot.get_channel(self.log_channel_id)
 			await staff_log_channel.send(embed=em)
 
+		print(f'{before.status} - {after.status}')
 		if before.status != after.status:
 			est = pytz.timezone('US/Eastern')
 			joined_date = before.joined_at.astimezone(est).strftime('%a %b %d %Y %-I:%M%p')
