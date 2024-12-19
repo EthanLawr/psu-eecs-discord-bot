@@ -246,7 +246,7 @@ class Logging(commands.Cog):
 
 		# Counting channel check
 		if before.channel.id == 715963289494093845:
-			l_msg = await before.channel.history(limit=1).flatten()
+			l_msg = [message async for message in await before.channel.history(limit=1)]
 			print(before.id, l_msg[0].id)
 			if before.id == l_msg[0].id:
 				counting_number = await self.get_counting_number()
