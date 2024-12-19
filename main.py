@@ -14,7 +14,7 @@ import threading
 from dotenv import load_dotenv
 
 load_dotenv() # adds environment variables to current environment (like bot key)
-bot = commands.Bot(command_prefix="!")
+# bot = commands.Bot(command_prefix="!")
 
 
 class PSU_Bot(commands.Bot): # inherits discord.commands class
